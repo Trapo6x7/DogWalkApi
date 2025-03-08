@@ -17,17 +17,20 @@ class UserDataPersister implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): User
     {
-        if ($data instanceof User) {
-            if ($data->getPassword()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPassword());
-                $data->setPassword($hashedPassword);
-            }
-            $data->setRoles(['ROLE_USER']);
-
-            $this->entityManager->persist($data);
-            $this->entityManager->flush();
+    
+        if ($data->getPassword()) {
+            $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPassword());
+            $data->setPassword($hashedPassword);
+            
         }
 
-        return $data;
+        if (!$data->getId()) {
+            // L'entité est nouvelle, donc on peut la persister sans problème
+            $this->entityManager->persist($data);
+        }
+
+        $this->entityManager->flush();
+
+        return $data; // Toujours retourner un User
     }
 }
