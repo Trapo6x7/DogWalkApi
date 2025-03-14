@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new GetCollection(
             uriTemplate: '/groupsRequests',
             normalizationContext: ['groups' => ['groupRequest:readAll']],
-            security: "is_granted('GROUPREQUEST_READ', object)",
+            security: "is_granted('GROUPREQUESTALL_READ', object)",
             securityMessage: "Seuls les admins peuvent voir les demandes",
             provider: AdminGroupsProvider::class
         ),
@@ -51,28 +51,28 @@ class GroupRequest
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['groupRequest:read'])]
+    #[Groups(['groupRequest:read', 'groupRequest:readAll'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupRequests')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['groupRequest:write','groupRequest:read'])]
+    #[Groups(['groupRequest:write','groupRequest:read','groupRequest:readAll'])]
     private ?Group $walkGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupRequests')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['groupRequest:write','groupRequest:read'])]
+    #[Groups(['groupRequest:write','groupRequest:read','groupRequest:readAll'])]
     private ?User $user = null;
 
     #[ORM\Column]
-    #[Groups(['groupRequest:read'])]
+    #[Groups(['groupRequest:read','groupRequest:readAll'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['groupRequest:patch','groupRequest:read'])]
+    #[Groups(['groupRequest:patch','groupRequest:read','groupRequest:readAll'])]
     private ?string $status = null;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())

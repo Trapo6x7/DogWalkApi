@@ -46,7 +46,8 @@ final class GroupRequestVoter extends Voter
         switch ($attribute) {
             case self::READ:
                 foreach ($group->getGroupRoles() as $groupRole) {
-                    if ($groupRole->getUser() === $user && $groupRole->getRole() === 'ADMIN') {
+                    // dd($groupRole);
+                    if ($groupRole->getUser() == $user && $groupRole->getRole() == 'ADMIN') {
                         return true;
                     }
                 }

@@ -5,6 +5,7 @@ namespace App\State\Provider;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Group;
+use App\Entity\GroupRequest;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
@@ -23,15 +24,16 @@ class AdminGroupsProvider implements ProviderInterface
         if (!$user || !is_object($user)) {
             return [];
         }
-///TODO
-        return $this->entityManager->getRepository(Group::class)
-            ->createQueryBuilder('g')
-            ->join('g.groupRoles', 'gr')
-            ->where('gr.user = :user')
-            ->andWhere('gr.role = :role')
-            ->setParameter('user', $user)
-            ->setParameter('role', 'ADMIN')
-            ->getQuery()
-            ->getResult();
+        
+        return $this->entityManager->getRepository(GroupRequest::class)
+        ->createQueryBuilder('grq')
+        ->innerJoin('grq.walkGroup', 'g')
+        ->innerJoin('g.groupRoles', 'gr')
+        ->where('gr.user = :user')
+        ->andWhere('gr.role = :role')
+        ->setParameter('user', $user)
+        ->setParameter('role', 'ADMIN')
+        ->getQuery()
+        ->getResult();
     }
 }

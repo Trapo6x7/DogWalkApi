@@ -51,7 +51,7 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['group:read', 'groupeRole:read', 'groupRequest:read'])]
+    #[Groups(['group:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -74,7 +74,7 @@ class Group
     private ?\DateTimeImmutable $deletedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['group:read', 'group:write', 'group:details', 'groupeRole:read', 'groupRequest:read'])]
+    #[Groups(['group:read', 'group:write', 'group:details', 'groupeRole:read', 'groupRequest:read','groupRequest:readAll'])]
     private ?string $name = null;
 
     /**
@@ -90,12 +90,20 @@ class Group
     #[ORM\OneToMany(targetEntity: GroupRequest::class, mappedBy: 'walkGroup', orphanRemoval: true)]
     private Collection $groupRequests;
 
+    /**
+     * @var Collection<int, Walk>
+     */
+    #[ORM\OneToMany(targetEntity: Walk::class, mappedBy: 'walkGroup', orphanRemoval: true)]
+    private Collection $walks;
+
+
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
         $this->groupRoles = new ArrayCollection();
         $this->groupRequests = new ArrayCollection();
+        $this->walks = new ArrayCollection();
     }
     
     public function getId(): ?int
@@ -235,4 +243,35 @@ class Group
         return $this;
     }
 
+    /**
+     * @return Collection<int, Walk>
+     */
+    public function getWalks(): Collection
+    {
+        return $this->walks;
+    }
+
+    public function addWalk(Walk $walk): static
+    {
+        if (!$this->walks->contains($walk)) {
+            $this->walks->add($walk);
+            $walk->setWalkGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWalk(Walk $walk): static
+    {
+        if ($this->walks->removeElement($walk)) {
+            // set the owning side to null (unless already changed)
+            if ($walk->getWalkGroup() === $this) {
+                $walk->setWalkGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+  
 }

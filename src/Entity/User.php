@@ -57,7 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['groupeRole:read', 'groupRequest:read'])]
+    #[Groups(['groupeRole:read', 'groupRequest:read','groupRequest:readAll'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -78,7 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:write', 'me:read','group:details', 'user:read', 'groupeRole:read', 'groupRequest:read'])]
+    #[Groups(['user:write', 'me:read','group:details', 'user:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
     private ?string $name = null;
 
     #[ORM\Column]
