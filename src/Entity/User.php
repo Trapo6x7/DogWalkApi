@@ -38,7 +38,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
         ),
         new Get(
             normalizationContext: ['groups' => ['user:read']],
-            security: "is_granted('ROLE_ADMIN')"
+            // security: "is_granted('ROLE_ADMIN')"
         ),
         new Delete(
             security: "is_granted('ROLE_USER') and object == user",
@@ -78,7 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:write', 'me:read','group:details', 'user:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
+    #[Groups(['user:write', 'me:read', 'user:read', 'group:details', 'user:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
     private ?string $name = null;
 
     #[ORM\Column]
@@ -120,6 +120,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: GroupRequest::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $groupRequests;
 
+    /**
+     * @var Collection<int, Review>
+     */
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user', orphanRemoval: true)]
+    #[Groups(['user:read'])]
+    private Collection $reviews;
+
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
@@ -128,6 +135,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->dogs = new ArrayCollection();
         $this->groupRoles = new ArrayCollection();
         $this->groupRequests = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -374,6 +382,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($groupRequest->getUser() === $this) {
                 $groupRequest->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    public function addReview(Review $review): static
+    {
+        if (!$this->reviews->contains($review)) {
+            $this->reviews->add($review);
+            $review->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(Review $review): static
+    {
+        if ($this->reviews->removeElement($review)) {
+            // set the owning side to null (unless already changed)
+            if ($review->getUser() === $this) {
+                $review->setUser(null);
             }
         }
 
