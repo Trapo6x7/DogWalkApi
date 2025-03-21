@@ -57,7 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['groupeRole:read', 'groupRequest:read','groupRequest:readAll'])]
+    #[Groups(['groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -124,9 +124,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Review>
      */
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user', orphanRemoval: true)]
-    #[Groups(['user:read'])]
     private Collection $reviews;
-
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
@@ -417,5 +415,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
 }

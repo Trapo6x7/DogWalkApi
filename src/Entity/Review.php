@@ -3,9 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\ReviewRepository;
 use DateTimeImmutable;
@@ -35,7 +33,7 @@ class Review
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['review:write', 'review:read', 'user:read', 'me:read', 'user:read'])]
+    #[Groups(['review:write', 'review:read', 'me:read', 'user:read', 'group:details'])]
     #[Assert\Range(
         min: 1,
         max: 5,
@@ -44,22 +42,26 @@ class Review
     private ?int $rating = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['review:write', 'review:read', 'user:read', 'me:read', 'user:read'])]
+    #[Groups(['review:write', 'review:read', 'me:read', 'user:read', 'group:details'])]
     private ?string $comment = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['group:details'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'reviews')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['review:read', 'review:write'])]
+    #[Groups(['review:write', 'review:read', 'me:read', 'group:details'])]
     private ?User $user = null;
+
+    #[ORM\ManyToOne(inversedBy: 'reviews')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['review:write', 'review:read', 'me:read'])]
+    private ?Group $walkGroup = null;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable())
     {
         $this->createdAt = $createdAt;
-
     }
     public function getRating(): ?int
     {
@@ -97,6 +99,15 @@ class Review
         return $this;
     }
 
+
+    /**
+     * Get the value of id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getUser(): ?User
     {
         return $this->user;
@@ -109,11 +120,15 @@ class Review
         return $this;
     }
 
-    /**
-     * Get the value of id
-     */ 
-    public function getId()
+    public function getWalkGroup(): ?Group
     {
-        return $this->id;
+        return $this->walkGroup;
+    }
+
+    public function setWalkGroup(?Group $walkGroup): static
+    {
+        $this->walkGroup = $walkGroup;
+
+        return $this;
     }
 }

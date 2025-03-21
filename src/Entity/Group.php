@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\Operation;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
@@ -44,6 +45,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: "is_granted('GROUP_DELETE', object)",
             securityMessage: "Vous ne pouvez supprimer que vos propres groupes"
         ),
+        new Get(
+            name: 'get_group_with_reviews',
+            uriTemplate: '/groups-reviews',
+            normalizationContext: ['groups' => ['group:reviews_only']],
+            security: "is_granted('ROLE_USER')",
+            securityMessage: "Vous n'avez pas les droits pour accéder à cette ressource"
+        ),
     ]
 )]
 class Group
@@ -51,7 +59,7 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['group:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
+    #[Groups(['group:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'group:reviews_only'])]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -74,7 +82,7 @@ class Group
     private ?\DateTimeImmutable $deletedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['group:read', 'group:write', 'group:details', 'groupeRole:read', 'groupRequest:read','groupRequest:readAll'])]
+    #[Groups(['group:read', 'group:write', 'group:details', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'group:reviews_only'])]
     private ?string $name = null;
 
     /**
@@ -94,9 +102,16 @@ class Group
      * @var Collection<int, Walk>
      */
     #[ORM\OneToMany(targetEntity: Walk::class, mappedBy: 'walkGroup', orphanRemoval: true)]
+    #[Groups(['group:details'])]
     private Collection $walks;
 
-    
+    /**
+     * @var Collection<int, Review>
+     */
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'walkGroup', orphanRemoval: true)]
+    #[Groups(['group:details'])]
+    private Collection $reviews;
+
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
@@ -105,8 +120,9 @@ class Group
         $this->groupRoles = new ArrayCollection();
         $this->groupRequests = new ArrayCollection();
         $this->walks = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -274,4 +290,33 @@ class Group
         return $this;
     }
 
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    public function addReview(Review $review): static
+    {
+        if (!$this->reviews->contains($review)) {
+            $this->reviews->add($review);
+            $review->setWalkGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(Review $review): static
+    {
+        if ($this->reviews->removeElement($review)) {
+            // set the owning side to null (unless already changed)
+            if ($review->getWalkGroup() === $this) {
+                $review->setWalkGroup(null);
+            }
+        }
+
+        return $this;
+    }
 }
