@@ -126,6 +126,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $reviews;
 
+    /**
+     * @var Collection<int, Report>
+     */
+    #[ORM\OneToMany(targetEntity: Report::class, mappedBy: 'reporter', orphanRemoval: true)]
+    private Collection $reports;
+
+    /**
+     * @var Collection<int, BlockList>
+     */
+    #[ORM\OneToMany(targetEntity: BlockList::class, mappedBy: 'blocker', orphanRemoval: true)]
+    private Collection $blockLists;
+
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
         $this->createdAt = $createdAt;
@@ -134,6 +146,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->groupRoles = new ArrayCollection();
         $this->groupRequests = new ArrayCollection();
         $this->reviews = new ArrayCollection();
+        $this->reports = new ArrayCollection();
+        $this->blockLists = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -410,6 +424,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($review->getUser() === $this) {
                 $review->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Report>
+     */
+    public function getReports(): Collection
+    {
+        return $this->reports;
+    }
+
+    public function addReport(Report $report): static
+    {
+        if (!$this->reports->contains($report)) {
+            $this->reports->add($report);
+            $report->setReporter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReport(Report $report): static
+    {
+        if ($this->reports->removeElement($report)) {
+            // set the owning side to null (unless already changed)
+            if ($report->getReporter() === $this) {
+                $report->setReporter(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BlockList>
+     */
+    public function getBlockLists(): Collection
+    {
+        return $this->blockLists;
+    }
+
+    public function addBlockList(BlockList $blockList): static
+    {
+        if (!$this->blockLists->contains($blockList)) {
+            $this->blockLists->add($blockList);
+            $blockList->setBlocker($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBlockList(BlockList $blockList): static
+    {
+        if ($this->blockLists->removeElement($blockList)) {
+            // set the owning side to null (unless already changed)
+            if ($blockList->getBlocker() === $this) {
+                $blockList->setBlocker(null);
             }
         }
 
