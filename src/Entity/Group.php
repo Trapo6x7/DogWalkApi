@@ -96,6 +96,7 @@ class Group
     #[ORM\OneToMany(targetEntity: Walk::class, mappedBy: 'walkGroup', orphanRemoval: true)]
     private Collection $walks;
 
+    
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
@@ -273,5 +274,4 @@ class Group
         return $this;
     }
 
-  
 }
