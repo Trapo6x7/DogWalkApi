@@ -5,6 +5,7 @@
 namespace App\Entity;
 
 use App\Repository\ReportRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReportRepository::class)]
@@ -32,6 +33,11 @@ class Report
     #[ORM\Column]
     private ?bool $statut = null;
 
+    public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable())
+    {
+        $this->createdAt = $createdAt;
+    }
+    
     public function getId(): ?int
     {
         return $this->id;

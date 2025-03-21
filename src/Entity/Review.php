@@ -63,6 +63,7 @@ class Review
     {
         $this->createdAt = $createdAt;
     }
+    
     public function getRating(): ?int
     {
         return $this->rating;

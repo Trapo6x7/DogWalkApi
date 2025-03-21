@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\BlockListRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BlockListRepository::class)]
@@ -24,6 +25,11 @@ class BlockList
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable())
+    {
+        $this->createdAt = $createdAt;
+    }
+    
     public function getId(): ?int
     {
         return $this->id;
