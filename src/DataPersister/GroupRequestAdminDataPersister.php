@@ -32,11 +32,11 @@ class GroupRequestAdminDataPersister implements ProcessorInterface
             $connectedUser = $this->security->getUser();
             // $groupRequestConnectedUser = $this->groupRequestRepository->findGroupRequestByGroupAndUser($data->getWalkGroup(), $connectedUser);
             $groupRoleConnectedUser = $this->groupRoleRepository->findGroupRoleByGroupAndUser($data->getWalkGroup(), $connectedUser);
-            if(!$groupRoleConnectedUser || $groupRoleConnectedUser->getRole() !== "ADMIN"){
+            if(!$groupRoleConnectedUser || $groupRoleConnectedUser->getRole() !== "CREATOR"){
                 throw new \Symfony\Component\HttpKernel\Exception\HttpException(403, 'Access Denied: You do not have the necessary permissions.');
             } else {
                 $connectedUserRole = $groupRoleConnectedUser->getRole();
-                if($connectedUserRole === "ADMIN"){
+                if($connectedUserRole === "CREATOR"){
                     $this->entityManager->persist($data);
                     $this->entityManager->flush();
                 }

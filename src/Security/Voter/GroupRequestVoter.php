@@ -47,7 +47,7 @@ final class GroupRequestVoter extends Voter
             case self::READ:
                 foreach ($group->getGroupRoles() as $groupRole) {
                     // dd($groupRole);
-                    if ($groupRole->getUser() == $user && $groupRole->getRole() == 'ADMIN') {
+                    if ($groupRole->getUser() == $user && $groupRole->getRole() == 'CREATOR') {
                         return true;
                     }
                 }

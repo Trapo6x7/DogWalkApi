@@ -33,7 +33,7 @@ final class GroupRoleVoter extends Voter{
         switch ($attribute) {
             case self::EDIT:
                 foreach($group->getGroupRoles() as $groupRole){
-                    if ($groupRole->getUser() === $user && $groupRole->getRole() === 'ADMIN'){
+                    if ($groupRole->getUser() === $user && $groupRole->getRole() === 'CREATOR'){
                         return true;
                     }
                 }

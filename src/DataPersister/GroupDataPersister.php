@@ -29,7 +29,7 @@ class GroupDataPersister implements ProcessorInterface
             
             $groupRole = new GroupRole();
             $groupRole->setUser($creator);
-            $groupRole->setRole("ADMIN");
+            $groupRole->setRole("CREATOR");
             $groupRole->setWalkGroup($data);
            
             $this->entityManager->persist($groupRole);

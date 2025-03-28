@@ -54,7 +54,7 @@ final class GroupRequestVoterAll extends Voter
         // Vérifier si l'utilisateur est ADMIN dans ce groupe
         foreach ($group->getGroupRoles() as $groupRole) {
            
-            if ($groupRole->getUser() === $user && $groupRole->getRole() === 'ADMIN') {
+            if ($groupRole->getUser() === $user && $groupRole->getRole() === 'CREATOR') {
                 return true;
             }
         }
