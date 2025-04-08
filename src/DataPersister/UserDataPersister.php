@@ -18,10 +18,10 @@ class UserDataPersister implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): User
     {
     
-        if ($data->getPassword()) {
+        if ($data instanceof User && $data->getPassword()) {
             $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPassword());
             $data->setPassword($hashedPassword);
-            
+            $data->setUpdatedAt(new \DateTimeImmutable());
         }
 
         if (!$data->getId()) {

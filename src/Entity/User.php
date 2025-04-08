@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -60,6 +61,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
     private ?int $id = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Email]
     #[ORM\Column(length: 180)]
     #[Groups(['user:write', 'me:read'])]
     private ?string $email = null;
@@ -73,14 +76,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 6)]
     #[ORM\Column]
     #[Groups(['user:write', 'me:read'])]
     private ?string $password = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3)]
     #[ORM\Column(length: 255)]
     #[Groups(['user:write', 'me:read', 'user:read', 'group:details', 'user:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
     private ?string $name = null;
 
+    #[Assert\NotNull]
+    #[Assert\LessThan('-18 years')]
     #[ORM\Column]
     #[Groups(['user:write', 'me:read'])]
     private ?\DateTimeImmutable $birthdate = null;
@@ -489,5 +498,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
 }
