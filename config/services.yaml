@@ -21,6 +21,10 @@ services:
             - '../src/Kernel.php'
     App\DataPersister\UserDataPersister:
         tags: ['api_platform.state_processor']
-
+    App\EventListener\ApiRateLimiterListener:
+        arguments:
+            $apiLimiter: '@limiter.authenticated_api'
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 10 }
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
