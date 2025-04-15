@@ -19,6 +19,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -109,6 +110,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $deletedAt;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:write', 'me:read', 'user:read'])]
+    private ?string $imageFilename = null;
+
+    #[Groups(['user:write'])]
+    public ?UploadedFile $file = null;
 
     /**
      * @var Collection<int, Dog>
@@ -318,6 +326,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->deletedAt = $deletedAt;
 
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): static
+    {
+        $this->imageFilename = $imageFilename;
         return $this;
     }
 

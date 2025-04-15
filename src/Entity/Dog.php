@@ -74,6 +74,10 @@ class Dog
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['dog:read', 'dog:write', 'me:read'])]
+    private ?string $imageFilename = null;
+
 
     public function getId(): ?int
     {
@@ -137,6 +141,17 @@ class Dog
     {
         $this->user = $user;
 
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): static
+    {
+        $this->imageFilename = $imageFilename;
         return $this;
     }
 }
