@@ -22,6 +22,29 @@ class UserDataPersister implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): User
     {
         if ($data instanceof User) {
+            // Vérifier si c'est une opération d'upload d'image
+            if (str_contains($operation->getName(), '_image')) {
+                dd($_FILES, $context['request']->files->all());
+                $request = $context['request'] ?? null;
+                if ($request && $request->files->has('file')) {
+                    $uploadedFile = $request->files->get('file');
+                    if ($uploadedFile instanceof UploadedFile) {
+                        // Valider le type de fichier
+                        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        if (!in_array($uploadedFile->getMimeType(), $allowedTypes)) {
+                            throw new \InvalidArgumentException('Invalid file type. Only JPG, PNG and GIF are allowed.');
+                        }
+                        
+                        $fileName = $this->fileUploader->upload($uploadedFile);
+                        $data->setImageFilename($fileName);
+                        $data->setUpdatedAt(new \DateTimeImmutable());
+                    }
+                }
+                $this->entityManager->flush();
+                return $data;
+            }
+
+            // Traitement normal pour les autres opérations
             if ($data->file instanceof UploadedFile) {
                 $fileName = $this->fileUploader->upload($data->file);
                 $data->setImageFilename($fileName);

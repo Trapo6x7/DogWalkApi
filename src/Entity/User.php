@@ -48,8 +48,17 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
         ),
         new Patch(
             denormalizationContext: ['groups' => ['user:write']],
-            security: "is_granted('USER_EDIT', object)",
-            securityMessage: "Vous ne pouvez modifier que vos propres nformations",
+            security: "is_granted('ROLE_USER') and object == user",
+            securityMessage: "Vous ne pouvez modifier que vos propres informations",
+            processor: UserDataPersister::class
+        ),
+        new Post(
+            uriTemplate: '/users/{id}/image',
+            denormalizationContext: ['groups' => ['user:image']],
+            security: "is_granted('ROLE_USER') and request.attributes.get('id') == user.getId()",
+            securityMessage: "Vous ne pouvez uploader une image que pour votre propre compte",
+            validationContext: ['groups' => ['Default']],
+            deserialize: false,
             processor: UserDataPersister::class
         ),
     ]
@@ -59,7 +68,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
+    #[Groups(['groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'me:read'])]
     private ?int $id = null;
 
     #[Assert\NotBlank]
@@ -112,10 +121,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $deletedAt;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:write', 'me:read', 'user:read'])]
+    #[Groups(['user:write', 'me:read', 'user:read', 'user:image'])]
     private ?string $imageFilename = null;
 
-    #[Groups(['user:write'])]
+    #[Groups(['user:write', 'me:read', 'user:read'])]
     public ?UploadedFile $file = null;
 
     /**
