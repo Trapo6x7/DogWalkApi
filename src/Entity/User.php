@@ -121,12 +121,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, GroupRole>
      */
     #[ORM\OneToMany(targetEntity: GroupRole::class, mappedBy: 'user', orphanRemoval: true)]
+    #[Groups(['me:read'])]
     private Collection $groupRoles;
 
     /**
      * @var Collection<int, GroupRequest>
      */
     #[ORM\OneToMany(targetEntity: GroupRequest::class, mappedBy: 'user', orphanRemoval: true)]
+    #[Groups(['me:read'])]
     private Collection $groupRequests;
 
     /**

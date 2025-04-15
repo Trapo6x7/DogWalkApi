@@ -46,7 +46,7 @@ class Walk
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['walk:read', 'walk:write', 'walk:patch'])]
+    #[Groups(['walk:read', 'walk:write', 'walk:patch', 'me:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
@@ -59,7 +59,7 @@ class Walk
 
     #[ORM\ManyToOne(inversedBy: 'walks')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['walk:read', 'walk:write', 'walk:patch'])]
+    #[Groups(['walk:read', 'walk:write', 'walk:patch', 'me:read'])]
     private ?Group $walkGroup = null;
 
     public function getId(): ?int

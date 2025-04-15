@@ -82,14 +82,14 @@ class Group
     private ?\DateTimeImmutable $deletedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['group:read', 'group:write', 'group:details', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'group:reviews_only'])]
+    #[Groups(['group:read', 'group:write', 'group:details', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'group:reviews_only', 'me:read'])]
     private ?string $name = null;
 
     /**
      * @var Collection<int, GroupRole>
      */
     #[ORM\OneToMany(targetEntity: GroupRole::class, mappedBy: 'walkGroup', orphanRemoval: true)]
-    #[Groups(['group:details'])]
+    #[Groups(['group:details', 'me:read'])]
     private Collection $groupRoles;
 
     /**
@@ -102,14 +102,14 @@ class Group
      * @var Collection<int, Walk>
      */
     #[ORM\OneToMany(targetEntity: Walk::class, mappedBy: 'walkGroup', orphanRemoval: true)]
-    #[Groups(['group:details'])]
+    #[Groups(['group:details', 'me:read'])]
     private Collection $walks;
 
     /**
      * @var Collection<int, Review>
      */
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'walkGroup', orphanRemoval: true)]
-    #[Groups(['group:details'])]
+    #[Groups(['group:details', 'me:read'])]
     private Collection $reviews;
 
 

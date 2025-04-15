@@ -56,7 +56,7 @@ class GroupRequest
 
     #[ORM\ManyToOne(inversedBy: 'groupRequests')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['groupRequest:write','groupRequest:read','groupRequest:readAll'])]
+    #[Groups(['groupRequest:write','groupRequest:read','groupRequest:readAll', 'me:read'])]
     private ?Group $walkGroup = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupRequests')]
@@ -72,7 +72,7 @@ class GroupRequest
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['groupRequest:patch','groupRequest:read','groupRequest:readAll'])]
+    #[Groups(['groupRequest:patch','groupRequest:read','groupRequest:readAll', 'me:read'])]
     private ?string $status = null;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
