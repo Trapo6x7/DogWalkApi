@@ -9,8 +9,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class FileUploader
 {
     public function __construct(
-        private string $targetDirectory,
-        private SluggerInterface $slugger
+        private readonly string $targetDirectory,
+        private readonly SluggerInterface $slugger,
     ) {}
 
     public function upload(UploadedFile $file): string
@@ -20,16 +20,11 @@ class FileUploader
         $fileName = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
         try {
-            $file->move($this->getTargetDirectory(), $fileName);
+            $file->move($this->targetDirectory, $fileName);
         } catch (FileException $e) {
-            throw new \Exception('Une erreur est survenue lors de l\'upload du fichier');
+            throw new \RuntimeException('Failed to upload file');
         }
 
         return $fileName;
-    }
-
-    public function getTargetDirectory(): string
-    {
-        return $this->targetDirectory;
     }
 }

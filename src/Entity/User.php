@@ -53,9 +53,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
             processor: UserDataPersister::class
         ),
         new Post(
-            uriTemplate: '/users/{id}/image',
+            uriTemplate: '/users/image',
             denormalizationContext: ['groups' => ['user:image']],
-            security: "is_granted('ROLE_USER') and request.attributes.get('id') == user.getId()",
+            security: "is_granted('ROLE_USER')",
             securityMessage: "Vous ne pouvez uploader une image que pour votre propre compte",
             validationContext: ['groups' => ['Default']],
             deserialize: false,
