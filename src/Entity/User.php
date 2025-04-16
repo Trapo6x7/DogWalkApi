@@ -95,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: 3)]
     #[ORM\Column(length: 255)]
-    #[Groups(['user:write', 'me:read', 'user:read', 'group:details', 'user:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
+    #[Groups(['user:write', 'me:read', 'user:read', 'group:details', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll'])]
     private ?string $name = null;
 
     #[Assert\NotNull]
@@ -165,6 +165,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: BlockList::class, mappedBy: 'blocker', orphanRemoval: true)]
     private Collection $blockLists;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['user:write', 'me:read', 'user:read'])]
+    private ?string $description = null;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
@@ -525,6 +529,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $blockList->setBlocker(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
