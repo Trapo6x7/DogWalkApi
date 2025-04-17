@@ -10,6 +10,8 @@ use App\Repository\UserRepository;
 use DateTimeImmutable;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
+use App\DataPersister\UserPasswordChangeDataPersister;
+use App\DataPersister\UserUpdateDataPersister;
 use App\State\Provider\MeProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -50,7 +52,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
             denormalizationContext: ['groups' => ['user:patch']],
             security: "is_granted('ROLE_USER')",
             securityMessage: "Vous ne pouvez modifier que vos propres informations",
-            processor: UserDataPersister::class
+            processor: UserUpdateDataPersister::class
+        ),
+        new Patch(
+            uriTemplate: '/users/updatepassword',
+            denormalizationContext: ['groups' => ['pass:patch']],
+            security: "is_granted('ROLE_USER')",
+            securityMessage: "Vous ne pouvez modifier que vos propres informations",
+            processor: UserPasswordChangeDataPersister::class
         ),
         new Post(
             uriTemplate: '/users/image',
@@ -59,7 +68,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
             securityMessage: "Vous ne pouvez uploader une image que pour votre propre compte",
             validationContext: ['groups' => ['Default']],
             deserialize: false,
-            processor: UserDataPersister::class
+            processor: UserUpdateDataPersister::class
         ),
     ]
 )]
@@ -89,7 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: 6)]
     #[ORM\Column]
-    #[Groups(['user:write', 'me:read'])]
+    #[Groups(['user:write', 'pass:patch'])]
     private ?string $password = null;
 
     #[Assert\NotBlank]

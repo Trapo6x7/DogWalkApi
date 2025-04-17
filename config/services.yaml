@@ -22,6 +22,16 @@ services:
       - "../src/Kernel.php"
   App\DataPersister\UserDataPersister:
     tags: ["api_platform.state_processor"]
+  App\DataPersister\UserUpdateDataPersister:
+    arguments:
+        $entityManager: '@doctrine.orm.entity_manager'
+        $passwordHasher: '@security.user_password_hasher'
+    tags: [ 'api_platform.state_processor' ]
+  App\DataPersister\UserPasswordChangeDataPersister:
+    arguments:
+        $entityManager: '@doctrine.orm.entity_manager'
+        $passwordHasher: '@security.user_password_hasher'
+    tags: [ 'api_platform.state_processor' ]
 #   App\EventListener\ApiRateLimiterListener:
 #     arguments:
 #       $apiLimiter: "@limiter.authenticated_api"

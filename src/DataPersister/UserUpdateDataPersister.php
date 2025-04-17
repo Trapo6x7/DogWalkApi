@@ -7,12 +7,11 @@ use ApiPlatform\State\ProcessorInterface;
 use App\Entity\User;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class UserDataPersister implements ProcessorInterface
+class UserUpdateDataPersister implements ProcessorInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -20,7 +19,6 @@ class UserDataPersister implements ProcessorInterface
         private readonly FileUploader $fileUploader,
         private readonly RequestStack $requestStack,
         private readonly Security $security,
-        private readonly LoggerInterface $logger
     ) {}
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): User
@@ -34,13 +32,11 @@ class UserDataPersister implements ProcessorInterface
             if ($user) {
                 if ($request && $request->files->has('file')) {
                     $file = $request->files->get('file');
-                    // dd($file);
 
                     if ($file) {
                         $fileName = $this->fileUploader->upload($file);
                         $user->setImageFilename($fileName);
                         $user->setUpdatedAt(new \DateTimeImmutable());
-                        // dd($user);
                         $this->entityManager->flush();
                     }
                 }
@@ -50,14 +46,7 @@ class UserDataPersister implements ProcessorInterface
 
 
         if ($data instanceof User) {
-            if ($data->getPassword()) {
-                // Vérifier si le mot de passe est déjà haché
-                if (!$this->passwordHasher->isPasswordValid($data, $data->getPassword())) {
-                    $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPassword());
-                    $data->setPassword($hashedPassword);
-                }
-            }
-        
+           
             $this->entityManager->persist($data);
             $this->entityManager->flush();
         }
