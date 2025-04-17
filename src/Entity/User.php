@@ -43,12 +43,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
             // security: "is_granted('ROLE_ADMIN')"
         ),
         new Delete(
-            security: "is_granted('ROLE_USER') and object == user",
+            security: "is_granted('ROLE_USER')",
             securityMessage: "Vous ne pouvez supprimer que votre propre compte",
         ),
         new Patch(
-            denormalizationContext: ['groups' => ['user:write']],
-            security: "is_granted('ROLE_USER') and object == user",
+            denormalizationContext: ['groups' => ['user:patch']],
+            security: "is_granted('ROLE_USER')",
             securityMessage: "Vous ne pouvez modifier que vos propres informations",
             processor: UserDataPersister::class
         ),
@@ -167,7 +167,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $blockLists;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['user:write', 'me:read', 'user:read'])]
+    #[Groups(['user:write','user:patch', 'me:read', 'user:read'])]
     private ?string $description = null;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())

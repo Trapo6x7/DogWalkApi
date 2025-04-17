@@ -46,13 +46,15 @@ class UserDataPersister implements ProcessorInterface
             }
         }
 
-        // Traitement normal pour les autres opérations
         if ($data instanceof User) {
             if ($data->getPassword()) {
-                $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPassword());
-                $data->setPassword($hashedPassword);
+                // Vérifier si le mot de passe est déjà haché
+                if (!$this->passwordHasher->isPasswordValid($data, $data->getPassword())) {
+                    $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPassword());
+                    $data->setPassword($hashedPassword);
+                }
             }
-
+        
             $this->entityManager->persist($data);
             $this->entityManager->flush();
         }
