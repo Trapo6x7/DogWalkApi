@@ -19,7 +19,7 @@ class UserPasswordChangeDataPersister implements ProcessorInterface
     {
         if ($data instanceof User && $data->getPassword()) {
             // Hash le nouveau mot de passe s'il n'est pas déjà hashé
-            if (!str_starts_with($data->getPassword(), '$2y$') && !str_starts_with($data->getPassword(), '$argon2')) {
+            if (!str_starts_with($data->getPassword(), '$2y$') || !str_starts_with($data->getPassword(), '$argon2')) {
                 $hashedPassword = $this->passwordHasher->hashPassword($data, $data->getPassword());
                 $data->setPassword($hashedPassword);
             }
