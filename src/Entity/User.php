@@ -22,6 +22,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Dto\UserPasswordUpdateDto;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -54,8 +56,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
             securityMessage: "Vous ne pouvez modifier que vos propres informations",
             processor: UserUpdateDataPersister::class
         ),
-        new Patch(
+        new Post(
             uriTemplate: '/users/updatepassword',
+            input: UserPasswordUpdateDto::class,
             denormalizationContext: ['groups' => ['pass:patch']],
             security: "is_granted('ROLE_USER')",
             securityMessage: "Vous ne pouvez modifier que vos propres informations",
@@ -178,6 +181,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['user:write','user:patch', 'me:read', 'user:read'])]
     private ?string $description = null;
+
+    #[Groups(['pass:patch'])]
+    private ?string $oldPassword = null;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
@@ -550,6 +556,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getOldPassword(): ?string
+    {
+        return $this->oldPassword;
+    }
+
+    public function setOldPassword(string $oldPassword): static
+    {
+        $this->oldPassword = $oldPassword;
 
         return $this;
     }
