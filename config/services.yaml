@@ -41,6 +41,10 @@ services:
     arguments:
       $targetDirectory: "%upload_directory%"
 
+  App\DataPersister\DogImageDataPersister:
+    arguments:
+      $uploadsDir: '%upload_directory%'
+
   app.authentication_failure_listener:
     class: App\EventListener\AuthenticationFailureListener
     tags:

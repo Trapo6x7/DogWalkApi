@@ -48,7 +48,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             securityMessage: "Vous ne pouvez supprimer que vos propres chiens"
         ),
         new Post(
-            uriTemplate: '/dogs/image',
+            uriTemplate: '/dogs/{id}/image',
             denormalizationContext: ['groups' => ['dog:image']],
             validationContext: ['groups' => ['Default']],
             security: "is_granted('ROLE_USER')",

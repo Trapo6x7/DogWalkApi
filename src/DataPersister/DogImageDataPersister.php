@@ -4,51 +4,53 @@ namespace App\DataPersister;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
-use App\Dto\UploadedFileDto;
 use App\Entity\Dog;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DogImageDataPersister implements ProcessorInterface
 {
-    public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly Security $security,
-        private readonly RequestStack $requestStack,
-        private readonly ValidatorInterface $validator
-    ) {}
+    private EntityManagerInterface $entityManager;
+    private RequestStack $requestStack;
+    private string $uploadsDir;
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Dog
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        RequestStack $requestStack,
+        string $uploadsDir
+    ) {
+        $this->entityManager = $entityManager;
+        $this->requestStack = $requestStack;
+        $this->uploadsDir = $uploadsDir;
+    }
+
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
         $request = $this->requestStack->getCurrentRequest();
-        $file = $request->files->get('file');
-        $dogId = $request->request->get('dog_id'); // ou en query param selon ton front
 
-        $dog = $this->em->getRepository(Dog::class)->find($dogId);
+        $uploadedFile = $request->files->get('file');
 
+        if (!$uploadedFile instanceof UploadedFile) {
+            throw new BadRequestHttpException('Aucun fichier envoyé.');
+        }
+
+        $dogId = $uriVariables['id'] ?? null;
+        if (!$dogId) {
+            throw new BadRequestHttpException('ID du chien manquant.');
+        }
+
+        $dog = $this->entityManager->getRepository(Dog::class)->find($dogId);
         if (!$dog) {
-            throw new \RuntimeException('Dog not found.');
+            throw new BadRequestHttpException('Chien non trouvé.');
         }
 
-        if ($dog->getUser() !== $this->security->getUser()) {
-            throw new \RuntimeException('Access denied.');
-        }
-
-        $dto = new UploadedFileDto();
-        $dto->file = $file;
-
-        $errors = $this->validator->validate($dto);
-        if (count($errors) > 0) {
-            throw new \RuntimeException((string) $errors);
-        }
-
-        $filename = uniqid('dog_') . '.' . $file->guessExtension();
-        $file->move('uploads/dogs', $filename);
+        $filename = uniqid().'.'.$uploadedFile->guessExtension();
+        $uploadedFile->move($this->uploadsDir, $filename);
 
         $dog->setImageFilename($filename);
-        $this->em->flush();
+        $this->entityManager->flush();
 
         return $dog;
     }
