@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
+use App\Controller\DogController;
 use App\DataPersister\DogDataPersister;
 use App\DataPersister\DogImageDataPersister;
 use App\Repository\DogRepository;
@@ -41,6 +42,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             securityMessage: "Vous ne pouvez modifier que vos propres chiens"
         ),
         new Delete(
+            uriTemplate: '/dogs/{id}',
+            controller: DogController::class . '::deleteDog',
             security: "is_granted('DOG_DELETE', object)",
             securityMessage: "Vous ne pouvez supprimer que vos propres chiens"
         ),
@@ -60,7 +63,7 @@ class Dog
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['me:read'])]
+    #[Groups(['me:read', 'dog:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -81,6 +84,7 @@ class Dog
 
     #[ORM\ManyToOne(inversedBy: 'dogs')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['me:read', 'dog:read'])]
     private ?User $user = null;
 
     #[ORM\Column(length: 255, nullable: true)]

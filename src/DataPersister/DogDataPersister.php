@@ -11,14 +11,19 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class DogDataPersister implements ProcessorInterface
 {
+    private EntityManagerInterface $entityManager;
+    private Security $security;
+
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly Security $security
-    ) {}
+        EntityManagerInterface $entityManager,
+        Security $security
+    ) {
+        $this->entityManager = $entityManager;
+        $this->security = $security;
+    }
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Dog
     {
-    
         if ($data instanceof Dog && $operation instanceof Post) {
             $data->setUser($this->security->getUser());
         }
