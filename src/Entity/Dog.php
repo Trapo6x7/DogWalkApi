@@ -10,10 +10,10 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
 use App\DataPersister\DogDataPersister;
+use App\DataPersister\DogImageDataPersister;
 use App\Repository\DogRepository;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -43,6 +43,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Delete(
             security: "is_granted('DOG_DELETE', object)",
             securityMessage: "Vous ne pouvez supprimer que vos propres chiens"
+        ),
+        new Post(
+            uriTemplate: '/dogs/image',
+            denormalizationContext: ['groups' => ['dog:image']],
+            validationContext: ['groups' => ['Default']],
+            security: "is_granted('ROLE_USER')",
+            securityMessage: "Vous ne pouvez uploader une image que pour vos chiens",
+            deserialize: false,
+            processor: DogImageDataPersister::class
         ),
     ]
 )]
@@ -75,9 +84,11 @@ class Dog
     private ?User $user = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['dog:read', 'dog:write', 'me:read'])]
+    #[Groups(['dog:read', 'me:read'])]
     private ?string $imageFilename = null;
 
+    #[Groups(['dog:image'])]
+    public ?UploadedFile $file = null;
 
     public function getId(): ?int
     {

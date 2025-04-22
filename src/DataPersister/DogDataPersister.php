@@ -18,6 +18,7 @@ class DogDataPersister implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Dog
     {
+    
         if ($data instanceof Dog && $operation instanceof Post) {
             $data->setUser($this->security->getUser());
         }
