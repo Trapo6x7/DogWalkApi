@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\AcceptGroupRequestController;
 use App\DataPersister\GroupRequestAdminDataPersister;
 use App\DataPersister\GroupRequestDataPersister;
 use App\DataPersister\GroupRoleDataPersister;
@@ -44,6 +45,13 @@ use Symfony\Component\Serializer\Attribute\Groups;
             processor: GroupRequestAdminDataPersister::class,
             securityMessage: "Seuls les admins peuvent accepter les demandes"
         ),
+        new Patch(
+            uriTemplate: '/group_requests/{id}/accept',
+            controller: AcceptGroupRequestController::class,
+            security: "is_granted('ROLE_USER')",
+            denormalizationContext: ['groups' => ['groupRequest:accept']],
+            name: 'accept_group_request'
+        )
     ]
 )]
 class GroupRequest
@@ -73,7 +81,7 @@ class GroupRequest
 
     #[ORM\Column(length: 255)]
     #[Groups(['groupRequest:patch','groupRequest:read','groupRequest:readAll', 'me:read'])]
-    private ?string $status = null;
+    private ?bool $status = false;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
