@@ -44,7 +44,9 @@ services:
   App\DataPersister\DogImageDataPersister:
     arguments:
       $uploadsDir: '%upload_directory%'
-
+  App\Controller\:
+    resource: '../src/Controller'
+    tags: ['controller.service_arguments']
   app.authentication_failure_listener:
     class: App\EventListener\AuthenticationFailureListener
     tags:

@@ -179,11 +179,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $blockLists;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['user:write','user:patch', 'me:read', 'user:read'])]
+    #[Groups(['user:write', 'user:patch', 'me:read', 'user:read'])]
     private ?string $description = null;
 
     #[Groups(['pass:patch'])]
     private ?string $oldPassword = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['user:write', 'me:read'])]
+    private ?string $city = null;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())
     {
@@ -568,6 +572,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setOldPassword(string $oldPassword): static
     {
         $this->oldPassword = $oldPassword;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
 
         return $this;
     }

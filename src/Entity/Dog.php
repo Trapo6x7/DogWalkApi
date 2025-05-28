@@ -98,7 +98,7 @@ class Dog
      * @var Collection<int, Race>
      */
     #[ORM\ManyToMany(targetEntity: Race::class, inversedBy: 'dogs')]
-    #[Groups(['dog:read', 'me:read'])]
+    #[Groups(['dog:read', 'dog:write', 'me:read'])]
     private Collection $race;
 
     public function __construct()

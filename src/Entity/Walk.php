@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\DataPersister\WalkDataPersister;
@@ -15,6 +16,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: WalkRepository::class)]
 #[ApiResource(
     operations: [
+        new GetCollection(
+            uriTemplate: '/groups/{id}/walks',
+            normalizationContext: ['groups' => ['walk:read']],
+            security: "is_granted('GROUP_VIEW', object)",
+            securityMessage: "Seuls les membres du groupe peuvent voir les balades"
+        ),
         new Get(
             normalizationContext: ['groups' => ['walk:read']],
             security: "is_granted('WALK_VIEW', object)",

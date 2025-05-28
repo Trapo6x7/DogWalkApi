@@ -34,7 +34,7 @@ class WalkDataPersister implements ProcessorInterface
                     $groupRole = $groupRoleRepository->findOneBy([
                         'user' => $user,
                         'walkGroup' => $group,
-                        'role' => 'MEMBER'
+                        'role' => ['MEMBER', 'CREATOR']
                     ]);
 
                     if ($groupRole) {

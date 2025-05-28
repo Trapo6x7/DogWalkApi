@@ -59,7 +59,7 @@ class Group
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['group:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'group:reviews_only'])]
+    #[Groups(['group:read', 'groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'group:reviews_only', 'group:details'])]
     private ?int $id = null;
 
     #[ORM\Column]

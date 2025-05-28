@@ -46,7 +46,23 @@ class UserUpdateDataPersister implements ProcessorInterface
 
 
         if ($data instanceof User) {
-           
+            // Récupérer les données de la requête
+            $request = $this->requestStack->getCurrentRequest();
+            if ($request) {
+                $requestData = json_decode($request->getContent(), true);
+
+                // Mettre à jour uniquement les champs modifiés
+                if (isset($requestData['city'])) {
+                    $data->setCity($requestData['city']);
+                }
+
+                if (isset($requestData['description'])) {
+                    $data->setDescription($requestData['description']);
+                }
+
+                // Ajoutez d'autres champs si nécessaire
+            }
+
             $this->entityManager->persist($data);
             $this->entityManager->flush();
         }

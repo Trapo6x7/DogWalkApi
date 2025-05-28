@@ -41,7 +41,7 @@ final class WalkVoter extends Voter
         if ($attribute === self::CREATE) {
             // Vérifiez si l'utilisateur est membre d'au moins un groupe
             foreach ($user->getGroupRoles() as $groupRole) {
-                if ($groupRole->getRole() === 'MEMBER') {
+                if ($groupRole->getRole() === 'MEMBER' || $groupRole->getRole() === 'CREATOR') {
                     return true;
                 }
             }
@@ -75,16 +75,16 @@ final class WalkVoter extends Voter
         return false;
     }
 
-    private function isUserInGroup(User $user, Group $group): bool
+    public function isUserInGroup(User $user, Group $group): bool
     {
-        // dd($user, $group);
-        // Logique pour vérifier si l'utilisateur est membre du groupe
         foreach ($user->getGroupRoles() as $groupRole) {
-            if ($groupRole->getWalkGroup() === $group && $groupRole->getRole() === 'MEMBER') {
+            if (
+                $groupRole->getWalkGroup()->getId() === $group->getId() &&
+                in_array($groupRole->getRole(), ['MEMBER', 'CREATOR'])
+            ) {
                 return true;
             }
         }
-
         return false;
     }
 }
