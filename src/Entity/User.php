@@ -185,6 +185,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['pass:patch'])]
     private ?string $oldPassword = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2)]
     #[ORM\Column(length: 255)]
     #[Groups(['user:write', 'me:read'])]
     private ?string $city = null;
