@@ -188,7 +188,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: 2)]
     #[ORM\Column(length: 255)]
-    #[Groups(['user:write', 'me:read'])]
+    #[Groups(['user:write', 'me:read', 'user:patch'])]
     private ?string $city = null;
 
     /**
