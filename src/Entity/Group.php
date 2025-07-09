@@ -339,7 +339,7 @@ class Group
     {
         if (!$this->comments->contains($comment)) {
             $this->comments->add($comment);
-            $comment->setGroupId($this);
+            $comment->setGroup($this);
         }
 
         return $this;
@@ -349,8 +349,8 @@ class Group
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getGroupId() === $this) {
-                $comment->setGroupId(null);
+            if ($comment->getGroup() === $this) {
+                $comment->setGroup(null);
             }
         }
 
