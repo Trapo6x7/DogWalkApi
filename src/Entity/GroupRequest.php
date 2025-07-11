@@ -51,6 +51,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
             security: "is_granted('ROLE_USER')",
             denormalizationContext: ['groups' => ['groupRequest:accept']],
             name: 'accept_group_request'
+        ),
+        new Delete(
+            security: "is_granted('ROLE_USER')",
+            securityMessage: "Seul le créateur du groupe ou un admin peut refuser une demande."
         )
     ]
 )]
@@ -69,7 +73,7 @@ class GroupRequest
 
     #[ORM\ManyToOne(inversedBy: 'groupRequests')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['groupRequest:write','groupRequest:read','groupRequest:readAll'])]
+    #[Groups(['groupRequest:write','groupRequest:read','groupRequest:readAll', 'group:details'])]
     private ?User $user = null;
 
     #[ORM\Column]
@@ -79,8 +83,8 @@ class GroupRequest
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['groupRequest:patch','groupRequest:read','groupRequest:readAll', 'me:read'])]
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    #[Groups(['groupRequest:patch','groupRequest:read','groupRequest:readAll', 'me:read', 'group:details'])]
     private ?bool $status = false;
 
     public function __construct(DateTimeImmutable $createdAt = new DateTimeImmutable(), DateTimeImmutable $updatedAt = new DateTimeImmutable())

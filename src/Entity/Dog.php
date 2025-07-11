@@ -69,7 +69,7 @@ class Dog
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['dog:read', 'dog:write', 'me:read'])]
+    #[Groups(['dog:read', 'dog:write', 'me:read', 'user:read'])]
     private ?string $name = null;
 
  
@@ -88,7 +88,7 @@ class Dog
     private ?User $user = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['dog:read', 'me:read'])]
+    #[Groups(['dog:read', 'me:read', 'user:read'])]
     private ?string $imageFilename = null;
 
     #[Groups(['dog:image'])]
@@ -98,7 +98,7 @@ class Dog
      * @var Collection<int, Race>
      */
     #[ORM\ManyToMany(targetEntity: Race::class, inversedBy: 'dogs')]
-    #[Groups(['dog:read', 'dog:write', 'me:read'])]
+    #[Groups(['dog:read', 'dog:write', 'me:read', 'user:read'])]
     private Collection $race;
 
     public function __construct()

@@ -56,6 +56,24 @@ use ApiPlatform\Metadata\Operation;
 )]
 class Group
 {
+    /**
+     * Le créateur du groupe
+     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['group:details', 'group:read', 'me:read'])]
+    private ?User $creator = null;
+
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(?User $creator): static
+    {
+        $this->creator = $creator;
+        return $this;
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -95,7 +113,12 @@ class Group
     /**
      * @var Collection<int, GroupRequest>
      */
+    /**
+     * @var Collection<int, GroupRequest>
+     * @ApiSubresource()
+     */
     #[ORM\OneToMany(targetEntity: GroupRequest::class, mappedBy: 'walkGroup', orphanRemoval: true)]
+    #[Groups(['group:details', 'me:read'])]
     private Collection $groupRequests;
 
     /**
@@ -115,7 +138,7 @@ class Group
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'group_id', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'group', orphanRemoval: true)]
     private Collection $comments;
 
 

@@ -22,17 +22,17 @@ class GroupRequestDataPersister implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): GroupRequest
     {
-        if ($data instanceof GroupRequest && $operation instanceof Post){
+        if ($data instanceof GroupRequest && $operation instanceof Post) {
             /** @var User */
             $connectedUser = $this->security->getUser();
-            if(!$connectedUser){
+            if (!$connectedUser) {
                 throw new \Symfony\Component\HttpKernel\Exception\HttpException(403, 'Access Denied: You do not have the necessary permissions.');
             } else {
-                    $data->setStatus("pending");
-                    $this->entityManager->persist($data);
-                    $this->entityManager->flush();
-            }         
+                $data->setStatus(false);
+                $this->entityManager->persist($data);
+                $this->entityManager->flush();
+            }
         }
-        return $data;      
+        return $data;
     }
 }

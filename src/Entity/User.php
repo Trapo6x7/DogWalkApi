@@ -77,6 +77,36 @@ use App\Dto\UserPasswordUpdateDto;
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    /**
+     * @var Collection<int, Group>
+     */
+    #[Groups(['me:read'])]
+    #[ORM\OneToMany(targetEntity: Group::class, mappedBy: 'creator')]
+    private Collection $createdGroups;
+
+    public function getCreatedGroups(): Collection
+    {
+        return $this->createdGroups;
+    }
+
+    public function addCreatedGroup(Group $group): static
+    {
+        if (!$this->createdGroups->contains($group)) {
+            $this->createdGroups->add($group);
+            $group->setCreator($this);
+        }
+        return $this;
+    }
+
+    public function removeCreatedGroup(Group $group): static
+    {
+        if ($this->createdGroups->removeElement($group)) {
+            if ($group->getCreator() === $this) {
+                $group->setCreator(null);
+            }
+        }
+        return $this;
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -120,7 +150,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isVerified = false;
 
     #[ORM\Column]
-    #[Groups(['me:read', 'user:read'])]
+    #[Groups(['me:read'])]
     private ?int $score = 0;
 
     #[ORM\Column]
@@ -136,14 +166,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:write', 'me:read', 'user:read', 'user:image'])]
     private ?string $imageFilename = null;
 
-    #[Groups(['user:write', 'me:read', 'user:read'])]
+    #[Groups(['user:write', 'me:read'])]
     public ?UploadedFile $file = null;
 
     /**
      * @var Collection<int, Dog>
      */
     #[ORM\OneToMany(targetEntity: Dog::class, mappedBy: 'user', orphanRemoval: true)]
-    #[Groups(['me:read'])]
+    #[Groups(['me:read', 'user:read'])]
     private Collection $dogs;
 
     /**
@@ -179,7 +209,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $blockLists;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['user:write', 'user:patch', 'me:read', 'user:read'])]
+    #[Groups(['user:write', 'user:patch', 'me:read'])]
     private ?string $description = null;
 
     #[Groups(['pass:patch'])]
@@ -208,6 +238,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->reports = new ArrayCollection();
         $this->blockLists = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->createdGroups = new ArrayCollection();
     }
 
     public function getId(): ?int

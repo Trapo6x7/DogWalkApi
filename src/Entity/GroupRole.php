@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
         ),
         new Post(
             denormalizationContext: ['groups' => ['groupRole:write']],
-            security: "is_granted('ROLE_USER')",
+            security: "is_granted('IS_AUTHENTICATED_FULLY')",
             processor: GroupRoleDataPersister::class,
             securityMessage: "Seuls les utilisateurs connectés peuvent créer des groupes"
         ),
@@ -46,7 +46,7 @@ class GroupRole
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['group:details', 'groupRole:patch', 'groupeRole:read'])]
+    #[Groups(['group:details', 'groupRole:patch', 'groupeRole:read', 'groupRole:write', 'me:read'])]
     private ?string $role = null;
 
     #[ORM\ManyToOne(inversedBy: 'groupRoles')]
@@ -56,7 +56,7 @@ class GroupRole
 
     #[ORM\ManyToOne(inversedBy: 'groupRoles')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['groupRole:write', 'groupeRole:read'])]
+    #[Groups(['groupRole:write', 'groupeRole:read', 'me:read'])]
     private ?Group $walkGroup = null;
 
     public function __construct(string $role = "MEMBER")

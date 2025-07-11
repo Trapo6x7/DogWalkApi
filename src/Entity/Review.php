@@ -33,7 +33,7 @@ class Review
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['review:write', 'review:read', 'me:read', 'user:read', 'group:details'])]
+    #[Groups(['review:write', 'review:read', 'me:read', 'group:details'])]
     #[Assert\Range(
         min: 1,
         max: 5,
@@ -42,7 +42,7 @@ class Review
     private ?int $rating = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['review:write', 'review:read', 'me:read', 'user:read', 'group:details'])]
+    #[Groups(['review:write', 'review:read', 'me:read', 'group:details'])]
     private ?string $comment = null;
 
     #[ORM\Column]

@@ -24,20 +24,21 @@ class GroupDataPersister implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Group
     {
         if ($data instanceof Group && $operation instanceof Post) {
-            /** @var User */
+            /** @var User $creator */
             $creator = $this->security->getUser();
-            
+            // Lier le créateur au groupe
+            $data->setCreator($creator);
+
             $groupRole = new GroupRole();
             $groupRole->setUser($creator);
             $groupRole->setRole("CREATOR");
             $groupRole->setWalkGroup($data);
-           
+
             $this->entityManager->persist($groupRole);
             $this->entityManager->persist($data);
             $this->entityManager->flush();
         }
 
         return $data;
-        
     }
 }
