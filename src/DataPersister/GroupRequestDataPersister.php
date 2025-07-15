@@ -26,7 +26,7 @@ class GroupRequestDataPersister implements ProcessorInterface
             /** @var User */
             $connectedUser = $this->security->getUser();
             if (!$connectedUser) {
-                throw new \Symfony\Component\HttpKernel\Exception\HttpException(403, 'Access Denied: You do not have the necessary permissions.');
+                throw new \Symfony\Component\HttpKernel\Exception\HttpException(403, 'Seuls les utilisateurs connectés peuvent faire une demande de groupe');
             } else {
                 $data->setStatus(false);
                 $this->entityManager->persist($data);

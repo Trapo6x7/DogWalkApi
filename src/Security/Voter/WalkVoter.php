@@ -60,15 +60,14 @@ final class WalkVoter extends Voter
             return false;
         }
 
-        // Handle specific permissions
+        // Gestion des permissions selon l'attribut
         switch ($attribute) {
             case self::VIEW:
             case self::CREATE:
-                // Members of the group can VIEW and CREATE
+                // Les membres du groupe peuvent voir et créer des promenades
                 return true;
             case self::EDIT:
             case self::DELETE:
-                // Add additional logic for EDIT and DELETE if needed
                 return false;
         }
 

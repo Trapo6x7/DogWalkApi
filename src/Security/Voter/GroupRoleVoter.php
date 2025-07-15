@@ -29,7 +29,6 @@ final class GroupRoleVoter extends Voter{
         /** @var GroupRole $subject */
         $group = $subject->getWalkGroup();
 
-        // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case self::EDIT:
                 foreach($group->getGroupRoles() as $groupRole){

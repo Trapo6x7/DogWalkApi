@@ -21,15 +21,12 @@ class WalkDataPersister implements ProcessorInterface
     {
         // Vérifier que l'objet est bien une instance de Walk (création ou mise à jour)
         if ($data instanceof Walk) {
-            // Récupérer l'utilisateur actuellement connecté
             $user = $this->security->getUser();
 
             if ($user) {
-                // Récupérer le groupe associé à la promenade
                 $group = $data->getWalkGroup();
 
                 if ($group) {
-                    // Vérifier que l'utilisateur appartient bien à ce groupe
                     $groupRoleRepository = $this->entityManager->getRepository(GroupRole::class);
                     $groupRole = $groupRoleRepository->findOneBy([
                         'user' => $user,

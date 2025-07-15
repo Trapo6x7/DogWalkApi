@@ -27,7 +27,7 @@ class GroupRoleDataPersister implements ProcessorInterface
             $connectedUser = $this->security->getUser();
             $groupRoleConnectedUser = $this->groupRoleRepository->findGroupRoleByGroupAndUser($data->getWalkGroup(), $connectedUser);
             if(!$groupRoleConnectedUser || $groupRoleConnectedUser->getRole() !== "CREATOR"){
-                throw new \Symfony\Component\HttpKernel\Exception\HttpException(403, 'Access Denied: You do not have the necessary permissions.');
+                throw new \Symfony\Component\HttpKernel\Exception\HttpException(403, 'Seul le le créateur du groupe peut modifier une demande de groupe');
             } else {
                 $connectedUserRole = $groupRoleConnectedUser->getRole();
                 if($connectedUserRole === "CREATOR"){

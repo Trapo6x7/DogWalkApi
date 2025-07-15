@@ -15,7 +15,7 @@ class AcceptGroupRequestController extends AbstractController
         $user = $this->getUser();
         $group = $data->getWalkGroup();
 
-        if ($group->getGroupRoles()->filter(fn($role) => $role->getUser() === $user && $role->getRole() === 'creator')->isEmpty()) {
+        if ($group->getGroupRoles()->filter(fn($role) => $role->getUser() === $user && $role->getRole() === 'CREATOR')->isEmpty()) {
             throw new AccessDeniedHttpException('Seul le créateur du groupe peut accepter une demande.');
         }
 
