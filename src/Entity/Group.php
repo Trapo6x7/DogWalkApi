@@ -27,7 +27,7 @@ use ApiPlatform\Metadata\Operation;
             security: "is_granted('PUBLIC_ACCESS')"
         ),
         new GetCollection(
-            normalizationContext: ['groups' => ['group:read']],
+            normalizationContext: ['groups' => ['group:details']],
             security: "is_granted('PUBLIC_ACCESS')"
         ),
         new Post(
@@ -107,7 +107,7 @@ class Group
      * @var Collection<int, GroupRole>
      */
     #[ORM\OneToMany(targetEntity: GroupRole::class, mappedBy: 'walkGroup', orphanRemoval: true)]
-    #[Groups(['group:details', 'me:read'])]
+    #[Groups(['group:read', 'group:details', 'me:read'])]
     private Collection $groupRoles;
 
     /**
