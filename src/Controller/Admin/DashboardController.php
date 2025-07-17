@@ -32,6 +32,8 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
+        // Restrict access to admins
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         // Fetch entity manager
         $em = $this->doctrine->getManager();
         // Fetch total counts for entities via QueryBuilder
