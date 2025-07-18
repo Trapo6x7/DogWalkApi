@@ -7,27 +7,42 @@ namespace App\Entity;
 use App\Repository\ReportRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ReportRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['report:read']],
+    denormalizationContext: ['groups' => ['report:write']],
+    operations: [
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new Post(security: "is_granted('ROLE_USER')"),
+        new Delete(security: "is_granted('ROLE_ADMIN') or (is_granted('ROLE_USER') and object.getReporter() == user)")
+    ]
+)]
 class Report
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'reports')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['report:read', 'report:write'])]
     private ?User $reporter = null;
 
     #[ORM\ManyToOne(inversedBy: 'reports')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['report:read', 'report:write'])]
     private ?User $reported = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $comment = null;
 
     #[ORM\Column]
+    #[Groups(['report:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
@@ -67,17 +82,7 @@ class Report
         return $this;
     }
 
-    public function getComment(): ?string
-    {
-        return $this->comment;
-    }
 
-    public function setComment(string $comment): static
-    {
-        $this->comment = $comment;
-
-        return $this;
-    }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {

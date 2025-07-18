@@ -110,7 +110,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'me:read', 'group:details', 'comment:read'])]
+    #[Groups(['groupeRole:read', 'groupRequest:read', 'groupRequest:readAll', 'me:read', 'user:read', 'group:details', 'comment:read'])]
     private ?int $id = null;
 
     #[Assert\NotBlank]
